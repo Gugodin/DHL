@@ -1,12 +1,14 @@
 from glob import glob
+import re
 from turtle import goto
 from Ind import Ind
 import random  
+import cruza as repro
 
 #PARAMETROS PARA LO DE LAS CIUDADES
 IntervaloX = [-3,3]
 IntervaloY = [-4,4]
-NoCiudades = 5
+NoCiudades = 6
 InitialCity = None
 Cities = []
 Population = []
@@ -88,16 +90,17 @@ def mating():
     global Population
 
     pTemp = []
-    
+
     for i in range(len(Population)):
         pTemp.append(Population[i])
-    
 
+    
     parents = []
     
     #Generamos parejas de 2 o 1 aleatoriamente
 
     while len(pTemp) != 0:
+
         partner1 = pTemp.pop(random.randint(0,len(pTemp)-1))
 
         if len(pTemp) != 0:
@@ -109,6 +112,9 @@ def mating():
 
     children = cruza(parents)
 
+    for child in children:
+        Population.append(child)
+
 
 
 
@@ -116,80 +122,61 @@ def mating():
 def cruza(parents):
 
     children = []
-
-    spotCross1 = 1
-    spotCross2 = len(parents[0][0].ruta) - 2
     
     for i in range(len(parents)):
 
 
         if len(parents) > 1:
             
-            p1 = parents[i][0].ruta
-            p2 = parents[i][1].ruta
+            p1 = parents[i][0].ruta.copy()
+            p2 = parents[i][1].ruta.copy()
+
+        
             p1.pop(0)
             p2.pop(0)
             p1.pop(len(p1)-1)
-            p2.pop(len(p2)-1)
+            p2.pop(len(p2)-1)     
 
-            print(f'Padre 1 ruta: {p1}')
-            print(f'Padre 2 ruta: {p2}')
+            ch1,ch2 = repro.pmx(p1,p2)
 
-            # Comenzamos con algoritmo PMX
-            puntosDeCruza = []
-            puntoCruza1 = random.randint(0,len(p1)-1)
-            puntoCruza2 = random.randint(0,len(p1)-1)
 
-            #Cuando se repita
-            while puntoCruza2 == puntoCruza1:
-                puntoCruza2 = random.randint(0,len(p1)-1)
+            ch1.insert(0,InitialCity)
+            ch2.insert(0,InitialCity)
+            ch1.insert(len(ch1),InitialCity)
+            ch2.insert(len(ch2),InitialCity)
+
+            # print(f'Ciudad inicial {InitialCity}')
+
             
-            puntosDeCruza.append(puntoCruza1)
-            puntosDeCruza.append(puntoCruza2)
 
-            print(puntosDeCruza)
+            child1 = Ind(ch1)
+            child2 = Ind(ch2)
 
-            cont = min(puntosDeCruza)
+            children.append(child1)
+            children.append(child2)
+    
+    return children
 
-            child1 = []
-            child2 = []
-            
-            while cont <= max(puntosDeCruza):
-                # print(f'Intermedio de padre 2 {p1[cont]}')
-                child1.append(p2[cont])
-                cont+=1
+           
 
-            cont = min(puntosDeCruza)    
+def poda():
+    global Population
 
-            while cont <= max(puntosDeCruza):
-                # print(f'Intermedio de padre 1 {p2[cont]}')
-                child2.append(p1[cont])
-                cont+=1
+    numEliminations = len(Population) - MaxPopulation
 
-            cp1:list = p1.copy()
-            cp2:list = p2.copy()
-            
-            #Comparamos el hijo 1 con el padre 1
+    aptitudes = []
+    
+    for i in range(len(Population)):
+        aptitudes.append(Population[i].gasto)
 
-            for x in range(len(cp1)):
-                elementoPadre = cp1[x]
-                if child1.count(elementoPadre) == 1:
-                    cp1[x] = ''
-            
-            for x in range(cp1.count('')):
-                cp1.pop(cp1.index(''))
+    for i in range(numEliminations):
+    
+        for x in range(len(aptitudes)):
 
-
-                
-                
-                    
-   
-
-            print(f'hijo 1 {child1}')
-            print(f'Padre {p1}')
-            print(f'Copia del padre {cp1}')
-
-
+            if aptitudes[x] == max(aptitudes):
+                Population.pop(x)
+                aptitudes.pop(x)
+                break
 
             
     
@@ -206,9 +193,20 @@ if __name__ == '__main__':
         Generations.update({f'gen{i+1}':[]})
     
     generateCities()
-    
+     
     generatePopulation()
- 
+
+    for i in range(numGeneration):
+
+        mating()
+
+        if len(Population) > MaxPopulation:
+            poda()
+
+        Generations[f'gen{i+1}'] = Population.copy()
+        
+
+    print(Generations)
 
 
-    mating()
+    
