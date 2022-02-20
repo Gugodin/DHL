@@ -259,7 +259,17 @@ class Ventana(QMainWindow):
             ys.append(ind.ruta[i][1])
 
 
-        ax.plot(xs, ys, marker='o',ls='dotted')
+        ax.scatter(xs, ys, marker='o',lw=0)
+
+        for i in range(len(ind.ruta)-1):
+
+            ax.annotate(' ', xy=(ind.ruta[i][0], ind.ruta[i][1]), xytext=(ind.ruta[i+1][0],ind.ruta[i+1][1]),
+                arrowprops=dict(facecolor='black', shrink=0.02,width=1,headwidth=8),
+                )
+
+        # ax.annotate('hola',xy=(1,10),xytext=(4,30),
+        # arrowprops=dict(facecolor='black',shrink=0.5))
+
         ax.plot(InitialCity[0], InitialCity[1], marker='x', lw=0,color='k')
 
 
@@ -277,21 +287,6 @@ if __name__ == '__main__':
 
     for i in range(numGeneration):
         Generations.update({f'gen{i + 1}': []})
-
-    # generateCities()
-
-    # generatePopulation()
-
-    # for i in range(numGeneration):
-
-    #     mating()
-
-    #     if len(Population) > MaxPopulation:
-    #         poda()
-
-    #     Generations[f'gen{i+1}'] = Population.copy()
-
-    # # print(Generations)
 
     app = QApplication(sys.argv)
     window = Ventana()
