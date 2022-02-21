@@ -241,7 +241,8 @@ class Ventana(QMainWindow):
         aptitudes = []
 
         for i in range(len(Generations[f'gen{numGeneration}'])):
-            aptitudes.append(Population[i].gasto)
+            aptitudes.append(Generations[f'gen{numGeneration}'][i].gasto)
+
         ind = Generations[f'gen{numGeneration}'][aptitudes.index(min(aptitudes))]
         xs = []
         ys = []
@@ -250,35 +251,34 @@ class Ventana(QMainWindow):
             xs.append(ind.ruta[i][0])
             ys.append(ind.ruta[i][1])
 
-        ax.scatter(xs, ys, marker='o',lw=0)
+        ax.plot(xs, ys, marker='o',lw=0)
 
         for i in range(len(ind.ruta)-1):
 
-            ax.annotate(' ', xy=(ind.ruta[i][0], ind.ruta[i][1]), xytext=(ind.ruta[i+1][0],ind.ruta[i+1][1]),
+            ax.annotate(' ', xy=(ind.ruta[i+1][0], ind.ruta[i+1][1]), xytext=(ind.ruta[i][0],ind.ruta[i][1]),
                 arrowprops=dict(facecolor='black', shrink=0.02,width=1,headwidth=8),
                 )
 
-        # ax.annotate('hola',xy=(1,10),xytext=(4,30),
-        # arrowprops=dict(facecolor='black',shrink=0.5))
+
 
         ax.plot(InitialCity[0], InitialCity[1], marker='x', lw=0,color='k')
 
         temp = Generations[f'gen{numGeneration}'].copy()
-        bestInd = [['Ruta','Distancias','Total Distancia','Litros','Gasto']]
-        for i in range(4):
-            bestTemp = temp[aptitudes.index(min(aptitudes))]
-            aptitudes.pop(aptitudes.index(min(aptitudes)))
-            bestInd.append([bestTemp.ruta, bestTemp.distancias, bestTemp.distanciaTotal, bestTemp.litrosGas, bestTemp.gasto]) 
+        bestInd = [['Total Distancia','Litros','Gasto']]
+        
+        bestTemp = temp[aptitudes.index(min(aptitudes))]
+        aptitudes.pop(aptitudes.index(min(aptitudes)))
+        bestInd.append([ bestTemp.distanciaTotal, bestTemp.litrosGas, bestTemp.gasto]) 
         
         ax2 = plt.subplot(2,1,2)
         ax2.axis('tight')
         ax2.axis('off')
         table = ax2.table(cellText = bestInd, loc = 'center', cellLoc = 'center')
         table.auto_set_font_size(False)
-        table.set_fontsize(7)
+        table.set_fontsize(10)
         table.scale(1,3)
 
-        ax2.set_title(f'\n Tabla de mejores individuos')
+        ax2.set_title(f'\n\n Tabla de mejor individuo\n\nRuta: {bestTemp.ruta}')
         
 
 
