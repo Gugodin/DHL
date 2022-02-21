@@ -23,7 +23,7 @@ InitialPopulation = 6
 MaxPopulation = 10
 ProbMutation = 0.5
 ProbMutationGen = 0.05
-numGeneration = 20
+numGeneration = 1
 Generations = {}
 
 
@@ -234,7 +234,7 @@ class Ventana(QMainWindow):
 
         figure2 = plt.figure(figsize=(15, 10))
 
-        ax = plt.subplot(1, 1, 1)
+        ax = plt.subplot(2, 1, 1)
 
         ax.set_title('Mapa de ruta')
 
@@ -242,22 +242,13 @@ class Ventana(QMainWindow):
 
         for i in range(len(Generations[f'gen{numGeneration}'])):
             aptitudes.append(Population[i].gasto)
-
-
-        # print(f'Aptitudes: {aptitudes}')
-        # print(f'Minimo: {aptitudes.index(min(aptitudes))}')
-
         ind = Generations[f'gen{numGeneration}'][aptitudes.index(min(aptitudes))]
-
-        print(ind.ruta)
-        # print(InitialCity)
         xs = []
         ys = []
 
         for i in range(len(ind.ruta)):
             xs.append(ind.ruta[i][0])
             ys.append(ind.ruta[i][1])
-
 
         ax.scatter(xs, ys, marker='o',lw=0)
 
@@ -272,6 +263,23 @@ class Ventana(QMainWindow):
 
         ax.plot(InitialCity[0], InitialCity[1], marker='x', lw=0,color='k')
 
+        temp = Generations[f'gen{numGeneration}'].copy()
+        bestInd = [['Ruta','Distancias','Total Distancia','Litros','Gasto']]
+        for i in range(4):
+            bestTemp = temp[aptitudes.index(min(aptitudes))]
+            aptitudes.pop(aptitudes.index(min(aptitudes)))
+            bestInd.append([bestTemp.ruta, bestTemp.distancias, bestTemp.distanciaTotal, bestTemp.litrosGas, bestTemp.gasto]) 
+        
+        ax2 = plt.subplot(2,1,2)
+        ax2.axis('tight')
+        ax2.axis('off')
+        table = ax2.table(cellText = bestInd, loc = 'center', cellLoc = 'center')
+        table.auto_set_font_size(False)
+        table.set_fontsize(7)
+        table.scale(1,3)
+
+        ax2.set_title(f'\n Tabla de mejores individuos')
+        
 
 
         plt.show()
