@@ -23,7 +23,7 @@ InitialPopulation = 6
 MaxPopulation = 10
 ProbMutation = 0.5
 ProbMutationGen = 0.05
-numGeneration = 1
+numGeneration = 20
 Generations = {}
 
 
@@ -209,6 +209,7 @@ class Ventana(QMainWindow):
             Generations[f'gen{i+1}'] = Population.copy()
 
         self.generateLastMap()
+        self.generateLastMap2()
 
 
     def generateFirtsMap(self):
@@ -243,6 +244,7 @@ class Ventana(QMainWindow):
         for i in range(len(Generations[f'gen{numGeneration}'])):
             aptitudes.append(Generations[f'gen{numGeneration}'][i].gasto)
 
+        print(aptitudes)
         ind = Generations[f'gen{numGeneration}'][aptitudes.index(min(aptitudes))]
         xs = []
         ys = []
@@ -268,7 +270,7 @@ class Ventana(QMainWindow):
         
         bestTemp = temp[aptitudes.index(min(aptitudes))]
         aptitudes.pop(aptitudes.index(min(aptitudes)))
-        bestInd.append([ bestTemp.distanciaTotal, bestTemp.litrosGas, bestTemp.gasto]) 
+        bestInd.append([f'{bestTemp.distanciaTotal} km', f'{bestTemp.litrosGas} litros', f'{bestTemp.gasto} pesos']) 
         
         ax2 = plt.subplot(2,1,2)
         ax2.axis('tight')
@@ -278,7 +280,65 @@ class Ventana(QMainWindow):
         table.set_fontsize(10)
         table.scale(1,3)
 
-        ax2.set_title(f'\n\n Tabla de mejor individuo\n\nRuta: {bestTemp.ruta}')
+        ax2.set_title(f'\n Tabla de mejor individuo\nRuta: {bestTemp.ruta}')
+        
+
+
+        plt.show()
+
+    def generateLastMap2(self):
+
+        figure2 = plt.figure(figsize=(15, 10))
+
+        ax = plt.subplot(2, 1, 1)
+
+        ax.set_title('Mapa de la peor ruta')
+
+        aptitudes = []
+
+        for i in range(len(Generations['gen1'])):
+            aptitudes.append(Generations['gen1'][i].gasto)
+        
+        print(aptitudes)
+
+        ind = Generations[f'gen1'][aptitudes.index(max(aptitudes))]
+        
+        print(ind.gasto)
+        xs = []
+        ys = []
+
+        for i in range(len(ind.ruta)):
+            xs.append(ind.ruta[i][0])
+            ys.append(ind.ruta[i][1])
+
+        ax.plot(xs, ys, marker='o',lw=0)
+
+        for i in range(len(ind.ruta)-1):
+
+            ax.annotate(' ', xy=(ind.ruta[i+1][0], ind.ruta[i+1][1]), xytext=(ind.ruta[i][0],ind.ruta[i][1]),
+                arrowprops=dict(facecolor='black', shrink=0.02,width=1,headwidth=8),
+                )
+
+
+
+        ax.plot(InitialCity[0], InitialCity[1], marker='x', lw=0,color='k')
+
+        temp = Generations[f'gen{numGeneration}'].copy()
+        bestInd = [['Total Distancia','Litros','Gasto']]
+        
+        bestTemp = temp[aptitudes.index(min(aptitudes))]
+        aptitudes.pop(aptitudes.index(min(aptitudes)))
+        bestInd.append([f'{ind.distanciaTotal} km', f'{ind.litrosGas} litros', f'{ind.gasto} pesos']) 
+        
+        ax2 = plt.subplot(2,1,2)
+        ax2.axis('tight')
+        ax2.axis('off')
+        table = ax2.table(cellText = bestInd, loc = 'center', cellLoc = 'center')
+        table.auto_set_font_size(False)
+        table.set_fontsize(10)
+        table.scale(1,3)
+
+        ax2.set_title(f'\n Tabla del peor individuo\nRuta: {ind.ruta}')
         
 
 
