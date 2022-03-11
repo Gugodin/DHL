@@ -19,11 +19,11 @@ Cities = []
 Population = []
 
 # PARAMETROS PARA EL ALGORITMO GENETICO
-InitialPopulation = 6
-MaxPopulation = 10
-ProbMutation = 0.5
-ProbMutationGen = 0.05
-numGeneration = 20
+InitialPopulation = 100
+MaxPopulation = 370
+ProbMutation = 0.8
+ProbMutationGen = 0.2
+numGeneration = 300
 Generations = {}
 
 
@@ -172,6 +172,9 @@ class Ventana(QMainWindow):
         global IntervaloX
         global IntervaloY
         global NoCiudades
+        global InitialCity
+        global Cities
+        global Population
 
         xTemp = []
         yTemp = []
@@ -189,27 +192,33 @@ class Ventana(QMainWindow):
         IntervaloY = yTemp.copy()
         NoCiudades = int(self.ui.nuCiudades.text())
 
-        generateCities()
+        for i in range(1):
+            generateCities()
 
-        # print(Cities)
+            # print(Cities)
 
-        self.generateFirtsMap()
+            self.generateFirtsMap()
 
-        plt.show()
+            plt.show()
 
-        generatePopulation()
-        
-        for i in range(numGeneration):
+            generatePopulation()
+            
+            for i in range(numGeneration):
 
-            mating()
+                mating()
 
-            if len(Population) > MaxPopulation:
-                poda()
+                if len(Population) > MaxPopulation:
+                    poda()
 
-            Generations[f'gen{i+1}'] = Population.copy()
+                Generations[f'gen{i+1}'] = Population.copy()
 
-        self.generateLastMap()
-        self.generateLastMap2()
+            self.generateLastMap()
+            # self.generateLastMap2()
+
+            InitialCity = None
+            Cities = []
+            Population = []
+            self.aptitudes = []
 
 
     def generateFirtsMap(self):
@@ -244,10 +253,13 @@ class Ventana(QMainWindow):
         for i in range(len(Generations[f'gen{numGeneration}'])):
             aptitudes.append(Generations[f'gen{numGeneration}'][i].gasto)
 
-        print(aptitudes)
+        # print(f'Aptitudes. {aptitudes}')
+        
         ind = Generations[f'gen{numGeneration}'][aptitudes.index(min(aptitudes))]
         xs = []
         ys = []
+
+        
 
         for i in range(len(ind.ruta)):
             xs.append(ind.ruta[i][0])
@@ -299,11 +311,11 @@ class Ventana(QMainWindow):
         for i in range(len(Generations['gen1'])):
             aptitudes.append(Generations['gen1'][i].gasto)
         
-        print(aptitudes)
+        # print(aptitudes)
 
         ind = Generations[f'gen1'][aptitudes.index(max(aptitudes))]
         
-        print(ind.gasto)
+        # print(ind.gasto)
         xs = []
         ys = []
 
